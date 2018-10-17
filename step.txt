@@ -1,0 +1,10 @@
+1 npm install express-generator -g
+2 express --view=ejs myend
+3  创建.babelrc文件 安装babel依赖  支持es6
+npm i  babel-cli babel-plugin-transform-runtime babel-preset-env babel-preset-es2015 babel-preset-stage-0 babel-register -D
+4 安装apidoc生成接口文档，安装cross-env 跨环境执行npm命令
+npm i api-doc cross-env -D
+5 为了使用es6, 创建启动文件index.js
+6 修改启动脚本  --node-args='--harmony'  和谐模式
+7 安装程序依赖
+npm i chalk config-lite connect-mongo express-session file-stream-rotator fs mongodb mongoose nodemon path time-formater -S
