@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
+import jwtAuth from '../config/jwt'
+import user from './user'
+import unAuth from './unAuth'
+import redisManager from '../config/redis'
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;
+export default (app) => {
+  app.use(jwtAuth) // 验证token的有效性
+  app.use('/api', unAuth)
+  app.use(redisManager.refreshToken) // 每一次请求都刷新token的过期时间
+  app.use('/user', user)
+}
