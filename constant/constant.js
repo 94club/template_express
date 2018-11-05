@@ -1,4 +1,4 @@
 export default {
-  secretKey: 'alistarzaofengxiuxiuquanquan',
+  secretKey: '94club.github.com.alistar',
   expireTime: 60
 }

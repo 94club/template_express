@@ -1,4 +1,5 @@
 'use strict'
+
 import UserModel from '../models/user'
 import dateAndTime from 'date-and-time'
 import constant from '../constant/constant'
@@ -36,9 +37,7 @@ class User {
       role = 1
     }
     // 先查一遍看看是否存在
-    let user = await UserModel.findOne({
-      username
-    })
+    let user = await UserModel.findOne({username})
     let token = jwt.sign(tokenObj, constant.secretKey)
     if (user) {
       // 用户已存在 去登录
@@ -51,9 +50,7 @@ class User {
         res.json({
           status: 200,
           message: '登录成功',
-          data: {
-            token
-          }
+          data: token
         })
       } else {
         res.json({
@@ -82,9 +79,7 @@ class User {
             res.json({
               status: 200,
               message: '注册成功',
-              data: {
-                token
-              }
+              data: token
             })
           }
         })
@@ -97,8 +92,8 @@ class User {
     }
   }
 
-  async getUserInfo(req, res) {
-    let userInfo = await UserModel.findOne({username: req.user.username},{'_id': 0, '_v': 0})
+  async getUserInfo (req, res) {
+    let userInfo = await UserModel.findOne({username: req.user.username}, {'_id': 0, '_v': 0})
     if (userInfo) {
       res.json({
         status: 200,

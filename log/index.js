@@ -1,23 +1,23 @@
-let morgan = require('morgan');
-let winston = require('winston');
-let path = require('path');
+let morgan = require('morgan')
+let winston = require('winston')
+let path = require('path')
 import moment from 'moment'
-let stackTrace = require('stack-trace');
-require('winston-daily-rotate-file');
+let stackTrace = require('stack-trace')
+require('winston-daily-rotate-file') // 引入进来， 其内部自己调用
 
 /**
  * 调用
- *  let Logger = require('./common/logger');
-    Logger.debug('test', 'test test');
-    Logger.info('test');
-    Logger.warn('test');  
-    Logger.error('test', 'test test');
+ *  let Logger = require('./common/logger')
+    Logger.debug('test', 'test test')
+    Logger.info('test')
+    Logger.warn('test')  
+    Logger.error('test', 'test test')
  * 
  */
 
 
 // 日志打印位置
-const LOGS_DIR = path.join(__dirname, '../logs');
+const LOGS_DIR = path.join(__dirname, '../logs')
 // 公共配置选项，每天生成一个日志文件，一个文件最大 10M
 const LOGGER_COMMON_CONFIG = {
   timestamp: moment().format('YYYY-MM-DD HH:mm:ss:SSS'),
@@ -26,7 +26,7 @@ const LOGGER_COMMON_CONFIG = {
   colorize: false,
   json: false,
   handleExceptions: true,
-};
+}
 /**
  * info 普通日志记录
  * error 错误严重时记录
@@ -62,7 +62,7 @@ let logger = winston.createLogger({
     }),
   ],
   exitOnError: false,
-});
+})
 /**
  * 打印 Access Log 使用
  * 不输出到控制台中
@@ -77,13 +77,13 @@ let accessLogger = winston.createLogger({
     }),
   ],
   exitOnError: false,
-});
+})
 // 提供 morgan 使用
 logger.stream = {
   write: function (message) {
-    accessLogger.info(message.trim()); // trim 去除多余换行
+    accessLogger.info(message.trim()) // trim 去除多余换行
   }
-};
+}
 /**
  * 日志处理对象
  */
@@ -96,12 +96,12 @@ let Logger = {
         // OPTIONS 类型请求不记录在日志中
         'skip': (req, res) => req.method === 'OPTIONS'
       })
-    );
+    )
   },
   // 开发模式才开启
   debug: function () {
     if (process.env['NODE_ENV'] === 'development') {
-      let cellSite = stackTrace.get()[1];
+      let cellSite = stackTrace.get()[1]
       logger.debug.apply(
         logger,
         [
@@ -111,11 +111,11 @@ let Logger = {
             LineNumber: cellSite.getLineNumber(),
           }
         ]
-      );
+      )
     }
   },
   info: function () {
-    let cellSite = stackTrace.get()[1];
+    let cellSite = stackTrace.get()[1]
     logger.info.apply(
       logger,
       [
@@ -125,10 +125,10 @@ let Logger = {
           LineNumber: cellSite.getLineNumber(),
         }
       ]
-    );
+    )
   },
   warn: function () {
-    let cellSite = stackTrace.get()[1];
+    let cellSite = stackTrace.get()[1]
     logger.warn.apply(
       logger,
       [
@@ -138,11 +138,11 @@ let Logger = {
           LineNumber: cellSite.getLineNumber(),
         }
       ]
-    );
+    )
   },
   // 错误日志并记录行号
   error: function () {
-    let cellSite = stackTrace.get()[1];
+    let cellSite = stackTrace.get()[1]
     logger.error.apply(
       logger,
       [
@@ -152,7 +152,7 @@ let Logger = {
           lineNumber: cellSite.getLineNumber(),
         }
       ]
-    );
+    )
   },
-};
-module.exports = Logger;
+}
+module.exports = Logger

@@ -4,11 +4,11 @@ import morgan from 'morgan'
 import path from 'path'
 import logger from './log'
 import chalk from 'chalk'
-import db from './mongodb/db.js' // 声明db文件
+import db from './mongodb/db.js' // 引入进来， 其内部自己调用
 import router from './routes/index'
 
 
-var app = express();
+var app = express()
 app.all('*', (req, res, next) => {
 	res.header("Access-Control-Allow-Origin", req.headers.Origin || req.headers.origin || 'nianhui')
 	res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
@@ -22,27 +22,27 @@ app.all('*', (req, res, next) => {
 	}
 })
 
-logger.initRequestLogger(app); // 日志系统
+logger.initRequestLogger(app) // 日志系统
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: false }));// for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use('/api', index); // 给接口加前缀
+app.use(bodyParser.json()) // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: false }))// for parsing application/x-www-form-urlencoded
+app.use(express.static(path.join(__dirname, 'public')))
+// app.use('/api', index) // 给接口加前缀
 router(app)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+  var err = new Error('Not Found')
+  err.status = 404
+  next(err)
+})
 
 // error handler
 app.use((err, req, res, next) => {
@@ -50,12 +50,12 @@ app.use((err, req, res, next) => {
     res.json({
       message: 'invalid token',
       status: 401
-    });
+    })
   } else {
     res.json({
       message: err.message,
       status: err.status
-    });
+    })
   }
 })
 
