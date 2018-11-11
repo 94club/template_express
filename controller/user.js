@@ -13,6 +13,34 @@ class User {
     this.logout = this.logout.bind(this)
   }
 
+  /**
+ *
+ * @api {post} /api/login  登录
+ * @apiName 登录
+ * @apiGroup user
+ * @apiVersion 1.0.0
+ * @apiDescription 接口详细描述
+ *
+ * @apiParam {String} username 用户名
+ *
+ * @apiSuccess {String} code 结果码
+ * @apiSuccess {String} message 消息说明
+ * 
+ * @apiSuccessExample {json}Success-Response:
+ *  HTTP/1.1 200 OK
+ * {
+ *   code: 0,
+ *   message: 'success',
+ *   data: {}
+ * }
+ *
+ *  @apiErrorExample {json} Error-Response:
+ *  HTTP/1.1 200
+ *  {
+ *   code: 0,
+ *   message: 'user not found',
+ *  }
+ */
   async login (req, res) {
     let role = 0 // 0代表普通用户 1代表管理员
     let username = req.body.username
