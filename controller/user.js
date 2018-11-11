@@ -3,7 +3,7 @@
 import UserModel from '../models/user'
 import dateAndTime from 'date-and-time'
 import constant from '../constant/constant'
-import jwt from 'jsonwebtoken'
+import jsonwebtoken from 'jsonwebtoken'
 import redisManager from '../config/redis'
 
 class User {
@@ -38,7 +38,7 @@ class User {
     }
     // 先查一遍看看是否存在
     let user = await UserModel.findOne({username})
-    let token = jwt.sign(tokenObj, constant.secretKey)
+    let token = jsonwebtoken.sign(tokenObj, constant.secretKey)
     if (user) {
       // 用户已存在 去登录
       let userInfo = await UserModel.findOne({
