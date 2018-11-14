@@ -1,7 +1,6 @@
 import constant from '../constant/constant'
 import redis from 'redis'
 import chalk from 'chalk'
-
 const redisClient = redis.createClient("6379", "127.0.0.1", {
   auth_pass: "94club"
 })
@@ -35,10 +34,10 @@ function refreshToken (req, res, next) {
   let token = getToken(req.headers)
   redisClient.get(token, (err, reply) => {
     if (reply) {
+      // console.log(reply + 'get')
       // token 在redis中存在，更新过期时间
       redisClient.expire(token, constant.expireTime, function(err, reply) {
         if (err) return false
-        console.log('更新token时间成功')
         next()
       })
     } else {
@@ -50,18 +49,29 @@ function refreshToken (req, res, next) {
   })
 }
 
-function set (token) {
-  redisClient.set(token, token, function (err, reply) {
+function set (token, username) {
+  redisClient.set(token, username, function (err, reply) {
     if (err) return false
-    console.log(reply)
+    // console.log(reply + 'set')
     if (reply) {
       // 设置过期时间
       redisClient.expire(token, constant.expireTime, function(err, reply) {
         if (err) return false
-        console.log('更新token时间成功')
       })
     }
   })
+  // 找到旧的token并删除
+  redisClient.get('token_current_' + username, function(err, reply) {
+    // reply is null when the key is missing
+    if (reply) {
+      redisClient.del(reply)
+      console.log('delete old')
+    }
+    // 覆盖旧的token
+    redisClient.set('token_current_' + username, token)
+  });
+  
+
 }
 
 function remove (req, next) {

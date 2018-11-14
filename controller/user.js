@@ -74,7 +74,7 @@ class User {
         password
       })
       if (userInfo) {
-        redisManager.set(token)
+        redisManager.set(token, username)
         res.json({
           status: 200,
           message: '登录成功',
@@ -103,7 +103,7 @@ class User {
               message: '注册失败'
             })
           } else {
-            redisManager.set(token)
+            redisManager.set(token, username)
             res.json({
               status: 200,
               message: '注册成功',
