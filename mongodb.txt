@@ -1,69 +1,54 @@
-#!/bin/sh
-
-#
-
-# Simple mongodb init.d script conceived to work on Linux systems
-
+ #!/bin/sh
+ #simple mongodb init.d script conceived to work on Linux systems
 # as it does use of the /proc filesystem.
-
-#chkconfig: 2345 80 90
-
-#description:auto_run
-
-MONGODBPORT=27017
-
-EXEC=/usr/local/bin/mongodb/bin/mongod
-
-PIDFILE=/usr/local/bin/mongodb/mongodb.pid
-
-CONF="/usr/local/bin/mongodb/mongodb.conf"
-
-OPTIONS="--config $CONF"
+   
+   #chkconfig: 2345 80 90
+   
+   #description:auto_run
+  
+  MONGODBPORT=27017
  
-case "$1" in
-    
-start)
-                
-echo "Starting mongodb server..."
-        
-$EXEC $OPTIONS
-        ;;
-    
-stop)
-        
-if [ ! -f $PIDFILE ]
-        
-then
-                
-echo "$PIDFILE does not exist, process is not running"
-
-else
-                
-PID=$(cat $PIDFILE)
-                
-echo "Stopping ..."
-pkill mogod
-                
-#$CLIEXEC  $MONGODBPORT shutdown
-                
-#while [ -x /proc/${PID} ]
-                
-#do
-                    
-#echo "Waiting for mongodb to shutdown ..."
-                    
-#sleep 1
-                
-#done
-                
-echo "mongodb stopped"
-        
-fi
-        ;;
-    
-*)
-        
-echo "Please use start or stop as first argument"
-        ;;
-
-esac
+  EXEC=/usr/bin/mongod
+ 
+  PIDFILE=/usr/bin/mongod.pid
+  
+ CONF="/etc/mongod.conf"
+ 
+ OPTIONS="-f $CONF"
+  
+  case "$1" in
+  
+  start)
+  
+  echo "Starting mongodb server..."
+  
+  $EXEC $OPTIONS
+         ;;
+ 
+  stop)
+  
+  if [ ! -f $PIDFILE ]
+  
+  then
+  
+  echo "$PIDFILE does not exist, process is not running"
+  
+  else
+  
+  PID=$(cat $PIDFILE)
+  
+  echo "Stopping ..."
+  
+  $EXEC  $OPTIONS --shutdown
+ 
+  echo "mongodb stopped"
+  
+  fi
+          ;;
+  
+  *)
+  
+  echo "Please use start or stop as first argument"
+          ;;
+  
+  esac
