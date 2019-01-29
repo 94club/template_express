@@ -10,7 +10,7 @@ job1:
         - master
     when: manual
     tags:
-        - end_master_tag
+        - end_master
     script:
         - cd /data
         - if [ ! -d "end" ] ; then 
@@ -25,7 +25,7 @@ job2:
     except:
         - master
     tags:
-        - end_dev_tag
+        - end_dev
     script:
         - cd /data
         - if [ ! -d "end" ] ; then 
