@@ -14,7 +14,7 @@ job1:
     script:
         - cd /data
         - if [ ! -d "end" ] ; then 
-        - git clone git@192.168.7.159:mobile/end.git
+        - git clone git@192.168.7.169:mobile/end.git
         - fi
         - cd end
         - git pull
@@ -29,9 +29,9 @@ job2:
     script:
         - cd /data
         - if [ ! -d "end" ] ; then 
-        - git clone git@192.168.7.159:mobile/end.git
+        - git clone git@192.168.7.169:mobile/end.git
         - fi
-        - cd lottery_end
+        - cd end
         - git pull
         - yarn install
         - pm2 start ecosystem.config.js --env production
