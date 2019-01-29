@@ -23,6 +23,7 @@ job1:
         - pm2 start deploy.json
         - sudo rsync -azhe ssh /data/end/ pro170:/data/end/
         - sudo ssh 192.168.7.170 -tt
+        - cd /data/end
         - pm2 start deploy.json
 job2:
     stage: dev_deploy
