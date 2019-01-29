@@ -19,7 +19,10 @@ job1:
         - cd end
         - git pull
         - yarn install
-        - pm2 start ecosystem.config.js --env dev
+        - pm2 start ecosystem.config.js --env production
+        # - sudo rsync -azhe ssh /data/end/ ***:/data/end/
+        # - sudo ssh ********
+        # - pm2 start ecosystem.config.js --env production
 job2:
     stage: dev_deploy
     except:
@@ -34,7 +37,4 @@ job2:
         - cd end
         - git pull
         - yarn install
-        - pm2 start ecosystem.config.js --env production
-        # - sudo rsync -azhe ssh /data/end/ ***:/data/end/
-        # - sudo ssh ********
-        # - pm2 start ecosystem.config.js --env production
+        - pm2 start ecosystem.config.js
