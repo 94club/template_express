@@ -17,6 +17,7 @@ job1:
         - git clone git@192.168.7.169:mobile/end.git
         - fi
         - cd end
+        - git checkout master
         - git pull
         - yarn install
         - pm2 start deploy.json
@@ -35,6 +36,7 @@ job2:
         - git clone git@192.168.7.169:mobile/end.git
         - fi
         - cd end
+        - git checkout dev
         - git pull
         - yarn install
         - pm2 start deploy.json
