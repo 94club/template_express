@@ -1,0 +1,40 @@
+stages:
+    - master_deploy
+    - dev_deploy
+cache:
+    paths:
+     - node_modules/
+job1:
+    stage: master_deploy
+    only:
+        - master
+    when: manual
+    tags:
+        - end_master_tag
+    script:
+        - cd /data
+        - if [ ! -d "end" ] ; then 
+        - git clone git@192.168.7.159:mobile/end.git
+        - fi
+        - cd end
+        - git pull
+        - yarn install
+        - pm2 start ecosystem.config.js --env dev
+job2:
+    stage: dev_deploy
+    except:
+        - master
+    tags:
+        - end_dev_tag
+    script:
+        - cd /data
+        - if [ ! -d "end" ] ; then 
+        - git clone git@192.168.7.159:mobile/end.git
+        - fi
+        - cd lottery_end
+        - git pull
+        - yarn install
+        - pm2 start ecosystem.config.js --env production
+        # - sudo rsync -azhe ssh /data/end/ ***:/data/end/
+        # - sudo ssh ********
+        # - pm2 start ecosystem.config.js --env production
