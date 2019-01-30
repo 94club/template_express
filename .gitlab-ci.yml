@@ -18,7 +18,7 @@ job1:
         - fi
         - cd end
         - git checkout master
-        - git pull
+        - sudo git pull
         - yarn install
         - pm2 start deploy.json
         - sudo rsync -azhe ssh /data/end/ pro170:/data/end/
@@ -38,6 +38,6 @@ job2:
         - fi
         - cd end
         - git checkout dev
-        - git pull
+        - sudo git pull
         - yarn install
         - pm2 start deploy.json
