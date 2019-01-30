@@ -1,1 +1,133 @@
-{}
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "94club的express后端项目的api",
+    "version": "1.0.0",
+    "title": "express_template",
+    "contact": {
+      "email": "alistarwang1314@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:9091",
+  "basePath": "/apidoc",
+  "tags": [
+    {
+      "name": "api",
+      "description": "no authorize action"
+    },
+    {
+      "name": "user",
+      "description": "Access to Petstore orders"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/login": {
+      "post": {
+        "tags": [
+          "api"
+        ],
+        "summary": "login and get a token",
+        "description": "",
+        "operationId": "login",
+        "parameters": [
+          {
+            "$ref": "#/parameters/userAgent"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "get userInfo",
+        "description": "",
+        "operationId": "getUserInfo",
+        "parameters": [
+          {
+            "$ref": "#/parameters/userAgent"
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "logout",
+        "description": "",
+        "operationId": "logout",
+        "parameters": [
+          {
+            "$ref": "#/parameters/userAgent"
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "userAgent": {
+      "name": "Authorization",
+      "type": "string",
+      "in": "header",
+      "required": true,
+      "default": "Bearer "
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  }
+}

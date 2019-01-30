@@ -4,11 +4,11 @@ import mongoose from 'mongoose'
 import chalk from 'chalk'
 console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV === 'dev') {
-  mongoose.connect('mongodb://localhost:27017/test_token', {
+  mongoose.connect('mongodb://94club2019:94club2019@localhost:27017/test', {
     useNewUrlParser: true
   })
 } else {
-  mongoose.connect('mongodb://localhost:27017/test_token', {
+  mongoose.connect('mongodb://94club2019:94club2019@localhost:27017/test', {
     useNewUrlParser: true
   })
 }
