@@ -33,8 +33,7 @@ app.set('view engine', 'ejs')
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: false }))// for parsing application/x-www-form-urlencoded
-app.use(express.static(path.join('public')))
-// app.use('/api', index) // 给接口加前缀
+app.use(express.static(path.join('public'))) // 使用iptables端口映射 隐藏真实端口
 router(app)
 
 // catch 404 and forward to error handler
