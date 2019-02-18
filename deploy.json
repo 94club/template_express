@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "production",
+      "name": "worker",
       "script": "./index.js",
       "cwd": "./",
       "exec_mode": "fork",
@@ -11,12 +11,15 @@
         "controller",
         "routes"
       ],
-      "node_args": [],
-      "args": [],
       "env": {
-        "NODE_ENV": "production",
-        "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27018/test",
+        "NODE_ENV": "dev",
+        "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27017/test",
         "REDIS_ADDR": "127.0.0.1"
+      },
+      "env_pro": {
+        "NODE_ENV": "pro",
+        "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27018/test",
+        "REDIS_ADDR": "localhost"
       }
     }
   ]
