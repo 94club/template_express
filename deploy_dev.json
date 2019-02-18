@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "name": "dev",
+      "script": "./index.js",
+      "cwd": "./",
+      "exec_mode": "fork",
+      "max_memory_restart": "1G",
+      "autorestart": true,
+      "watch": [
+        "controller",
+        "routes"
+      ],
+      "node_args": [],
+      "args": [],
+      "env": {
+        "NODE_ENV": "dev",
+        "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27017/test",
+        "REDIS_ADDR": "127.0.0.1"
+      }
+    }
+  ]
+}

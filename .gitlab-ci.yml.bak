@@ -20,7 +20,7 @@ job1:
         - git checkout master
         - git pull
         - yarn install
-        - pm2 start deploy.json --env dev
+        - pm2 start deploy_dev.json --env dev
         - sudo rsync -azhe ssh /data/end/ pro170:/data/end/
 job2:
     stage: dev_deploy
@@ -37,4 +37,4 @@ job2:
         - git checkout dev
         - git pull
         - yarn install
-        - pm2 start deploy.json --env production
+        - pm2 start deploy_production.json --env production
