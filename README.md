@@ -15,3 +15,6 @@
 2 用1中生成的json文件替换public/apidoc/apidoc.json<br/>
 3 利用express的静态服务，生成接口文档 localhost/apidoc<br/>
 [5、单点登录]
+
+## 注意事项：
+redis和mongodb的地址使用部署文件配置

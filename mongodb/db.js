@@ -3,15 +3,10 @@
 import mongoose from 'mongoose'
 import chalk from 'chalk'
 console.log(process.env.NODE_ENV)
-if (process.env.NODE_ENV === 'dev') {
-  mongoose.connect('mongodb://94club2019:94club2019@localhost:27017/test', {
-    useNewUrlParser: true
-  })
-} else {
-  mongoose.connect('mongodb://94club2019:94club2019@localhost:27017/test', {
-    useNewUrlParser: true
-  })
-}
+console.log(process.env.DB_ADDR)
+mongoose.connect(process.env.DB_ADDR, {
+  useNewUrlParser: true
+})
 mongoose.Promise = global.Promise
 
 const db = mongoose.connection

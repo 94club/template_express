@@ -1,7 +1,8 @@
 import constant from '../constant/constant'
 import redis from 'redis'
 import chalk from 'chalk'
-const redisClient = redis.createClient("6379", "127.0.0.1", {
+console.log(process.env.REDIS_ADDR)
+const redisClient = redis.createClient("6379", process.env.REDIS_ADDR, {
   auth_pass: "94club"
 })
 
