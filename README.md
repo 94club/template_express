@@ -18,3 +18,4 @@
 
 ## 注意事项：
 redis和mongodb的地址使用部署文件配置
+iptables 端口映射
