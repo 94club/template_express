@@ -58,9 +58,12 @@ app.use((err, req, res, next) => {
     })
   }
 })
-
-app.listen(8001, () => {
+let port = process.env.PORT
+if (!port) {
+  port = 8001
+}
+app.listen(port, () => {
 	console.log(
-		chalk.green("成功监听端口8001")
+		chalk.green("成功监听端口")
 	)
 })

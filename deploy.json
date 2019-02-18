@@ -11,15 +11,17 @@
         "controller",
         "routes"
       ],
-      "env": {
+      "env_dev": {
         "NODE_ENV": "dev",
         "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27017/test",
-        "REDIS_ADDR": "127.0.0.1"
+        "REDIS_ADDR": "127.0.0.1",
+        "PORT": 8001
       },
       "env_pro": {
         "NODE_ENV": "pro",
         "DB_ADDR": "mongodb://94club2019:94club2019@localhost:27018/test",
-        "REDIS_ADDR": "localhost"
+        "REDIS_ADDR": "localhost",
+        "PORT": 8001
       }
     }
   ]
