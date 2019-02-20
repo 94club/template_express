@@ -20,7 +20,7 @@ class AddressComponent extends BaseComponent {
 		return new Promise(async (resolve, reject) => {
 			let ip;
 			const defaultIp = '180.158.102.141';
-	 		if (process.env.NODE_ENV == 'dev') {
+	 		if (process.env.NODE_ENV == 'dev' || req.host == 'localhost') {
 	 			ip = defaultIp;
 	 		} else {
 	 			try {

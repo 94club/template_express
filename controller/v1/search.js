@@ -12,7 +12,7 @@ class SearchPlace extends AddressComponent{
 	async search(req, res, next){
 		let {type = 'search', city_id, keyword} = req.query;
 		if (!keyword) {
-			res.send({
+			res.json({
 				name: 'ERROR_QUERY_TYPE',
 				message: '参数错误',
 			})
@@ -24,7 +24,7 @@ class SearchPlace extends AddressComponent{
 				city_id = cityInfo.id;
 			}catch(err){
 				console.log('搜索地址时，获取定位城失败')
-				res.send({
+				res.json({
 					name: 'ERROR_GET_POSITION',
 					message: '获取数据失败',
 				})
@@ -43,9 +43,9 @@ class SearchPlace extends AddressComponent{
 					geohash: item.location.lat + ',' + item.location.lng,
 				})
 			});
-			res.send(cityList);
+			res.json(cityList);
 		}catch(err){
-			res.send({
+			res.json({
 				name: 'GET_ADDRESS_ERROR',
 				message: '获取地址信息失败',
 			});

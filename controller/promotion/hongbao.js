@@ -27,7 +27,7 @@ class Hongbao extends BaseComponent{
 			}
 		}catch(err){
 			console.log(err.message, err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: err.message
@@ -36,10 +36,10 @@ class Hongbao extends BaseComponent{
 		}
 		try{
 			const hongbaos = await HongbaoModel.find({present_status}, '-_id').limit(Number(limit)).skip(Number(offset));
-			res.send(hongbaos)
+			res.json(hongbaos)
 		}catch(err){
 			console.log('获取红包数据失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_HONGBAO_DATA',
 				message: '获取红包数据失败'
@@ -47,7 +47,7 @@ class Hongbao extends BaseComponent{
 		}
 	}
 	async exchange(req, res, next){
-		res.send({
+		res.json({
 			status: 0,
 			type: 'NOT_ALLOWD_API',
 			message: '无效的兑换码'

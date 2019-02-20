@@ -2,7 +2,6 @@ import express from 'express'
 import Admin from '../controller/admin/admin'
 const router = express.Router()
 
-router.post('/login', Admin.login) // 37、管理员登录
 // router.post('/register', Admin.register)
 router.get('/singout', Admin.singout) // 38、管理员退出登录
 router.get('/all', Admin.getAllAdmin) // 46、管理员列表

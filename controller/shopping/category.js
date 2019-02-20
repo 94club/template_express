@@ -11,10 +11,10 @@ class Category extends BaseComponent{
 	async getCategories(req, res, next){
 		try{
 			const categories = await CategoryModel.find({}, '-_id');
-			res.send(categories);
+			res.json(categories);
 		}catch(err){
 			console.log('获取categories失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '获取categories失败'
@@ -47,10 +47,10 @@ class Category extends BaseComponent{
 	async getDelivery(req, res, next){
 		try{
 			const deliveries = await DeliveryModel.find({}, '-_id');
-			res.send(deliveries)
+			res.json(deliveries)
 		}catch(err){
 			console.log('获取配送方式数据失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '获取配送方式数据失败'
@@ -61,10 +61,10 @@ class Category extends BaseComponent{
 	async getActivity(req, res, next){
 		try{
 			const activities = await ActivityModel.find({}, '-_id');
-			res.send(activities)
+			res.json(activities)
 		}catch(err){
 			console.log('获取活动数据失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '获取活动数据失败'

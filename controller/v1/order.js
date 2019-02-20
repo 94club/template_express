@@ -17,7 +17,7 @@ class Order extends BaseComponent{
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
 				console.log('formidable解析出错', err);
-				res.send({
+				res.json({
 					status: 1,
 					message: '下单失败'
 				})
@@ -41,7 +41,7 @@ class Order extends BaseComponent{
 				}
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: err.message
@@ -55,7 +55,7 @@ class Order extends BaseComponent{
 				order_id = await this.getId('order_id');
 			}catch(err){
 				console.log('获取数据失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_GET_DATA',
 					message: '获取订单失败',
@@ -94,14 +94,14 @@ class Order extends BaseComponent{
 			}
 			try{
 				await OrderModel.create(orderObj);
-				res.send({
+				res.json({
 					status: 1,
 					success: '下单成功，请及时付款',
 					need_validation: false,
 				})
 			}catch(err){
 				console.log('保存订单数据失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_SAVE_ORDER',
 					message: '保存订单失败'
@@ -122,7 +122,7 @@ class Order extends BaseComponent{
 			}
 		}catch(err){
 			console.log(err.message, err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: err.message
@@ -142,10 +142,10 @@ class Order extends BaseComponent{
 				item.save()
 				return item
 			})
-			res.send(orders);
+			res.json(orders);
 		}catch(err){
 			console.log('获取订单列表失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_ORDER_LIST',
 				message: '获取订单列表失败'
@@ -162,7 +162,7 @@ class Order extends BaseComponent{
 			}
 		}catch(err){
 			console.log(err.message);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_ERROR_PARAM',
 				message: err.message,
@@ -173,10 +173,10 @@ class Order extends BaseComponent{
 			const order = await OrderModel.findOne({id: order_id}, '-_id');
 			const addressDetail = await AddressModel.findOne({id: order.address_id});
 			const orderDetail = {...order, ...{addressDetail: addressDetail.address, consignee: addressDetail.name, deliver_time: '尽快送达', pay_method: '在线支付', phone: addressDetail.phone}};
-			res.send(orderDetail)
+			res.json(orderDetail)
 		}catch(err){
 			console.log('获取订单信息失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_ORDER_DETAIL',
 				message: '获取订单信息失败'
@@ -203,10 +203,10 @@ class Order extends BaseComponent{
 				item.save()
 				return item
 			})
-			res.send(orders);
+			res.json(orders);
 		}catch(err){
 			console.log('获取订单数据失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_ORDER_DATA_ERROR',
 				message: '获取订单数据失败'
@@ -222,13 +222,13 @@ class Order extends BaseComponent{
 			}
 
 			const count = await OrderModel.find(filter).count();
-			res.send({
+			res.json({
 				status: 1,
 				count,
 			})
 		}catch(err){
 			console.log('获取订单数量失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_COUNT',
 				message: '获取订单数量失败'

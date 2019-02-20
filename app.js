@@ -1,5 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
+import session from 'express-session';
 import morgan from 'morgan'
 import path from 'path'
 // import logger from './log'
@@ -16,7 +17,7 @@ app.all('*', (req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true) //可以带cookies
 	res.header("X-Powered-By", '3.2.1')
 	if (req.method == 'OPTIONS') {
-    res.sendStatus(200)
+    res.jsonStatus(200)
 	} else {
     next()
 	}
@@ -34,6 +35,27 @@ app.set('view engine', 'ejs')
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: false }))// for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join('public'))) // 使用iptables端口映射 隐藏真实端口
+app.get('/favicon.ico', (req, res) => res.status(204));
+// let db_url = process.env.DB_ADDR
+// if (!db_url) {
+//   db_url = "mongodb://94club2019:94club2019@localhost:27017/test"
+// }
+// console.log(db_url)
+// const MongoStore = require('connect-mongo')(session);
+// app.use(session({
+//   name: 'SID',
+// 	secret: 'SID',
+// 	resave: true,
+// 	saveUninitialized: false,
+// 	cookie: {
+//     secure:   false,
+//     maxAge:   60 * 60 * 1000,
+//   },
+// 	store: new MongoStore({
+//   	url: db_url,
+//     collection : 'sessions'
+// 	})
+// }))
 router(app)
 
 // catch 404 and forward to error handler

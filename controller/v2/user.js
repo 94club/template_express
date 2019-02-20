@@ -5,115 +5,143 @@ import formidable from 'formidable'
 import UserInfoModel from '../../models/v2/userInfo'
 import UserModel from '../../models/v2/user'
 import crypto from 'crypto'
-import dtime from 'time-formater'
+import dateAndTime from 'date-and-time'
+import redisManager from '../../config/redis'
+import jsonwebtoken from 'jsonwebtoken'
+import constant from '../../constant/constant'
+import CaptchaModel from '../../models/captcha/captcha'
 
 class User extends AddressComponent {
 	constructor(){
 		super()
 		this.login = this.login.bind(this);
+		this.getInfo = this.getInfo.bind(this);
 		this.encryption = this.encryption.bind(this);
 		this.chanegPassword = this.chanegPassword.bind(this);
 		this.updateAvatar = this.updateAvatar.bind(this);
 	}
 	async login(req, res, next){
-		const cap = req.cookies.cap;
-		if (!cap) {
-			console.log('验证码失效')
-			res.send({
+		const {username, password, captchaCode, uuid} = req.body
+		const tokenObj = {
+      username
+    }
+		try{
+			if (!username) {
+				throw new Error('用户名参数错误');
+			}else if(!password){
+				throw new Error('密码参数错误');
+			}else if(!captchaCode){
+				throw new Error('验证码参数错误');
+			}
+		}catch(err){
+			console.log('登陆参数错误', err);
+			res.json({
 				status: 0,
-				type: 'ERROR_CAPTCHA',
-				message: '验证码失效',
+				message: err.message,
 			})
 			return
 		}
-		const form = new formidable.IncomingForm();
-		form.parse(req, async (err, fields, files) => {
-			const {username, password, captcha_code} = fields;
+		let captchaInfo = await CaptchaModel.findOne({cap: captchaCode})
+		if (!captchaInfo || captchaInfo.uuid !== uuid){
+			res.json({
+				status: 0,
+				message: '验证码错误',
+			})
+			return
+		}
+		// const form = new formidable.IncomingForm();
+		// form.parse(req, async (err, fields, files) => {
+		// 	const {username, password, captcha_code} = fields;
+		// 	try{
+		// 		if (!username) {
+		// 			throw new Error('用户名参数错误');
+		// 		}else if(!password){
+		// 			throw new Error('密码参数错误');
+		// 		}else if(!captcha_code){
+		// 			throw new Error('验证码参数错误');
+		// 		}
+		// 	}catch(err){
+		// 		console.log('登陆参数错误', err);
+		// 		res.json({
+		// 			status: 0,
+		// 			type: 'ERROR_QUERY',
+		// 			message: err.message,
+		// 		})
+		// 		return
+		// 	}
+		// 	if (cap.toString() !== captcha_code.toString()) {
+		// 		res.json({
+		// 			status: 0,
+		// 			type: 'ERROR_CAPTCHA',
+		// 			message: '验证码不正确',
+		// 		})
+		// 		return
+		// 	}
 			try{
-				if (!username) {
-					throw new Error('用户名参数错误');
-				}else if(!password){
-					throw new Error('密码参数错误');
-				}else if(!captcha_code){
-					throw new Error('验证码参数错误');
-				}
-			}catch(err){
-				console.log('登陆参数错误', err);
-				res.send({
-					status: 0,
-					type: 'ERROR_QUERY',
-					message: err.message,
-				})
-				return
-			}
-			if (cap.toString() !== captcha_code.toString()) {
-				res.send({
-					status: 0,
-					type: 'ERROR_CAPTCHA',
-					message: '验证码不正确',
-				})
-				return
-			}
-			const newpassword = this.encryption(password);
-			try{
-				const user = await UserModel.findOne({username});
+				const user = await UserInfoModel.findOne({username});
+				let token = jsonwebtoken.sign(tokenObj, constant.secretKey)
 				//创建一个新的用户
 				if (!user) {
-					const user_id = await this.getId('user_id');
+					const userInfoArr = await UserInfoModel.find({});
+					const userId = userInfoArr.length + 1
 					const cityInfo = await this.guessPosition(req);
-					const registe_time = dtime().format('YYYY-MM-DD HH:mm');
-					const newUser = {username, password: newpassword, user_id};
-					const newUserInfo = {username, user_id, id: user_id, city: cityInfo.city, registe_time, };
-					UserModel.create(newUser);
-					const createUser = new UserInfoModel(newUserInfo);
-					const userinfo = await createUser.save();
-					req.session.user_id = user_id;
-					res.send(userinfo);
-				}else if (user.password.toString() !== newpassword.toString()) {
-					console.log('用户登录密码错误')
-					res.send({
+					const registerTime = dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss");
+					// const newUser = {username, password, userId};
+					// UserModel.create(newUser);
+					const userInfo = {username, userId, id: userId, city: cityInfo.city, registerTime, password};
+					// const createUser = new UserInfoModel(newUserInfo);
+					// const userinfo = await createUser.save();
+					// const userInfo = await UserInfoModel.save(newUserInfo);
+					UserInfoModel.create(userInfo, function (err) {
+						if (!err) {
+							redisManager.set(token, username)
+							res.json({
+								status: 200,
+								message: '注册成功',
+								data: token
+							});
+						} else {
+							res.json({
+								status: 0,
+								message: '注册失败'
+							});
+						}
+					})
+				}else if (user.password.toString() !== password.toString()) {
+					res.json({
 						status: 0,
-						type: 'ERROR_PASSWORD',
 						message: '密码错误',
 					})
 					return 
-				}else{
-					req.session.user_id = user.user_id;
-					const userinfo = await UserInfoModel.findOne({user_id: user.user_id}, '-_id');
-					res.send(userinfo) 
+				} else {
+					redisManager.set(token, username)
+          res.json({
+            status: 200,
+            message: '登录成功',
+            data: token
+          })
 				}
-			}catch(err){
+			} catch(err){
 				console.log('用户登陆失败', err);
-				res.send({
+				res.json({
 					status: 0,
-					type: 'SAVE_USER_FAILED',
 					message: '登陆失败',
 				})
 			}
-		})
 	}
 	async getInfo(req, res, next){
-		const sid = req.session.user_id;
-		const qid = req.query.user_id;
-		const user_id = sid || qid;
-		if (!user_id || !Number(user_id)) {
-			// console.log('获取用户信息的参数user_id无效', user_id)
-			res.send({
-				status: 0,
-				type: 'GET_USER_INFO_FAIELD',
-				message: '通过session获取用户信息失败',
-			})
-			return 
-		}
+		const username = req.user.username
 		try{
-			const userinfo = await UserInfoModel.findOne({user_id}, '-_id');
-			res.send(userinfo) 
+			const userInfo = await UserInfoModel.findOne({username}, {'_id': 0, '__v': 0});
+			res.json({
+				status: 200,
+				message: '个人信息获取成功',
+				data: userInfo
+			}) 
 		}catch(err){
-			console.log('通过session获取用户信息失败', err);
-			res.send({
+			res.json({
 				status: 0,
-				type: 'GET_USER_INFO_FAIELD',
-				message: '通过session获取用户信息失败',
+				message: '获取用户信息失败',
 			})
 		}
 	}
@@ -121,7 +149,7 @@ class User extends AddressComponent {
 		const user_id = req.params.user_id;
 		if (!user_id || !Number(user_id)) {
 			console.log('通过ID获取用户信息失败')
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_USER_INFO_FAIELD',
 				message: '通过用户ID获取用户信息失败',
@@ -130,10 +158,10 @@ class User extends AddressComponent {
 		}
 		try{
 			const userinfo = await UserInfoModel.findOne({user_id}, '-_id');
-			res.send(userinfo) 
+			res.json(userinfo) 
 		}catch(err){
 			console.log('通过用户ID获取用户信息失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_USER_INFO_FAIELD',
 				message: '通过用户ID获取用户信息失败',
@@ -141,17 +169,17 @@ class User extends AddressComponent {
 		}
 	}
 	async signout(req, res, next){
-		delete req.session.user_id;
-		res.send({
-			status: 1,
+		res.json({
+			status: 200,
 			message: '退出成功'
 		})
+    redisManager.remove(req)
 	}
 	async chanegPassword(req, res, next){
 		const cap = req.cookies.cap;
 		if (!cap) {
 			console.log('验证码失效')
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_CAPTCHA',
 				message: '验证码失效',
@@ -177,7 +205,7 @@ class User extends AddressComponent {
 				}
 			}catch(err){
 				console.log('修改密码参数错误', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_QUERY',
 					message: err.message,
@@ -185,7 +213,7 @@ class User extends AddressComponent {
 				return
 			}
 			if (cap.toString() !== captcha_code.toString()) {
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_CAPTCHA',
 					message: '验证码不正确',
@@ -196,13 +224,13 @@ class User extends AddressComponent {
 			try{
 				const user = await UserModel.findOne({username});
 				if (!user) {
-					res.send({
+					res.json({
 						status: 0,
 						type: 'USER_NOT_FOUND',
 						message: '未找到当前用户',
 					})
 				}else if(user.password.toString() !== md5password.toString()){
-					res.send({
+					res.json({
 						status: 0,
 						type: 'ERROR_PASSWORD',
 						message: '密码不正确',
@@ -210,14 +238,14 @@ class User extends AddressComponent {
 				}else{
 					user.password = this.encryption(newpassword);
 					user.save();
-					res.send({
+					res.json({
 						status: 1,
 						success: '密码修改成功',
 					})
 				}
 			}catch(err){
 				console.log('修改密码失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_CHANGE_PASSWORD',
 					message: '修改密码失败',
@@ -237,10 +265,10 @@ class User extends AddressComponent {
 		const {limit = 20, offset = 0} = req.query;
 		try{
 			const users = await UserInfoModel.find({}, '-_id').sort({user_id: -1}).limit(Number(limit)).skip(Number(offset));
-			res.send(users);
+			res.json(users);
 		}catch(err){
 			console.log('获取用户列表数据失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取用户列表数据失败'
@@ -250,13 +278,13 @@ class User extends AddressComponent {
 	async getUserCount(req, res, next){
 		try{
 			const count = await UserInfoModel.count();
-			res.send({
+			res.json({
 				status: 1,
 				count,
 			})
 		}catch(err){
 			console.log('获取用户数量失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_USER_COUNT',
 				message: '获取用户数量失败'
@@ -264,12 +292,10 @@ class User extends AddressComponent {
 		}
 	}
 	async updateAvatar(req, res, next){
-		const sid = req.session.user_id;
-		const pid = req.params.user_id;
 		const user_id = sid || pid;
 		if (!user_id || !Number(user_id)) {
 			console.log('更新头像，user_id错误', user_id)
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_USERID',
 				message: 'user_id参数错误',
@@ -280,13 +306,13 @@ class User extends AddressComponent {
 		try{
 			const image_path = await this.getPath(req);
 			await UserInfoModel.findOneAndUpdate({user_id}, {$set: {avatar: image_path}});
-			res.send({
+			res.json({
 				status: 1,
 				image_path,
 			})
 		}catch(err){
 			console.log('上传图片失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_UPLOAD_IMG',
 				message: '上传图片失败'
@@ -301,7 +327,7 @@ class User extends AddressComponent {
 		})
 		filterArr.push(UserInfoModel.$where('!"北京上海深圳杭州".includes(this.city)').count())
 		Promise.all(filterArr).then(result => {
-			res.send({
+			res.json({
 				status: 1,
 				user_city: {
 					beijing: result[0],
@@ -313,7 +339,7 @@ class User extends AddressComponent {
 			})
 		}).catch(err => {
 			console.log('获取用户分布城市数据失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_USER_CITY',
 				message: '获取用户分布城市数据失败'

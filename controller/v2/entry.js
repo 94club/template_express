@@ -9,10 +9,10 @@ class Entry {
 	async getEntry(req, res, next){
 		try{
 			const entries = await EntryModel.find({}, '-_id');
-			res.send(entries);
+			res.json(entries);
 		}catch(err){
 			console.log('获取数据失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '获取数据失败'

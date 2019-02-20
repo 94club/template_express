@@ -13,7 +13,7 @@ class Address extends BaseComponent{
 	async getAddress(req, res, next){
 		const user_id = req.params.user_id;
 		if (!user_id || !Number(user_id)) {
-			res.send({
+			res.json({
 				type: 'ERROR_USER_ID',
 				message: 'user_id参数错误',
 			})
@@ -21,10 +21,10 @@ class Address extends BaseComponent{
 		}
 		try{
 			const addressList = await AddressModel.find({user_id}, '-_id');
-			res.send(addressList)
+			res.json(addressList)
 		}catch(err){
 			console.log('获取收获地址失败', err);
-			res.send({
+			res.json({
 				type: 'ERROR_GET_ADDRESS',
 				message: '获取地址列表失败'
 			})
@@ -57,7 +57,7 @@ class Address extends BaseComponent{
 				}
 			}catch(err){
 				console.log(err.message);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'GET_WRONG_PARAM',
 					message: err.message
@@ -80,13 +80,13 @@ class Address extends BaseComponent{
 					user_id,
 				}
 				await AddressModel.create(newAddress);
-				res.send({
+				res.json({
 					status: 1,
 					success: '添加地址成功'
 				})
 			}catch(err){
 				console.log('添加地址失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_ADD_ADDRESS',
 					message: '添加地址失败'
@@ -97,7 +97,7 @@ class Address extends BaseComponent{
 	async deleteAddress(req, res, next){
 		const {user_id, address_id} = req.params;
 		if (!user_id || !Number(user_id) || !address_id || !Number(address_id)) {
-			res.send({
+			res.json({
 				type: 'ERROR_PARAMS',
 				message: '参数错误',
 			})
@@ -105,13 +105,13 @@ class Address extends BaseComponent{
 		}
 		try{
 			await AddressModel.findOneAndRemove({id: address_id});
-			res.send({
+			res.json({
 				status: 1,
 				success: '删除地址成功',
 			})
 		}catch(err){
 			console.log('删除收获地址失败', err);
-			res.send({
+			res.json({
 				type: 'ERROR_DELETE_ADDRESS',
 				message: '删除收获地址失败'
 			})
@@ -120,7 +120,7 @@ class Address extends BaseComponent{
 	async getAddAddressById(req, res, next){
 		const address_id = req.params.address_id;
 		if (!address_id || !Number(address_id)) {
-			res.send({
+			res.json({
 				type: 'ERROR_PARAMS',
 				message: '参数错误',
 			})
@@ -128,10 +128,10 @@ class Address extends BaseComponent{
 		}
 		try{
 			const address = await AddressModel.findOne({id: address_id});
-			res.send(address)
+			res.json(address)
 		}catch(err){
 			console.log('获取地址信息失败', err);
-			res.send({
+			res.json({
 				type: 'ERROR_GET_ADDRESS',
 				message: '获取地址信息失败'
 			})

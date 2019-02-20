@@ -1,8 +1,8 @@
-const express = require('express')
-const router = express.Router()
-import User from '../controller/user'
+// const express = require('express')
+// const router = express.Router()
+// // import User from '../controller/user'
 
-router.get('/info', User.getUserInfo)
-router.post('/logout', User.logout)
+// router.get('/info', User.getUserInfo)
+// router.post('/logout', User.logout)
 
-export default router
+// export default router

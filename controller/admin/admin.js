@@ -16,7 +16,7 @@ class Admin extends AddressComponent {
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
-				res.send({
+				res.json({
 					status: 0,
 					type: 'FORM_DATA_ERROR',
 					message: '表单信息错误'
@@ -32,7 +32,7 @@ class Admin extends AddressComponent {
 				}
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'GET_ERROR_PARAM',
 					message: err.message,
@@ -57,27 +57,27 @@ class Admin extends AddressComponent {
 					}
 					await AdminModel.create(newAdmin)
 					req.session.admin_id = admin_id;
-					res.send({
+					res.json({
 						status: 1,
 						success: '注册管理员成功',
 					})
 				}else if(newpassword.toString() != admin.password.toString()){
 					console.log('管理员登录密码错误');
-					res.send({
+					res.json({
 						status: 0,
 						type: 'ERROR_PASSWORD',
 						message: '该用户已存在，密码输入错误',
 					})
 				}else{
 					req.session.admin_id = admin.id;
-					res.send({
+					res.json({
 						status: 1,
 						success: '登录成功'
 					})
 				}
 			}catch(err){
 				console.log('登录管理员失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'LOGIN_ADMIN_FAILED',
 					message: '登录管理员失败',
@@ -89,7 +89,7 @@ class Admin extends AddressComponent {
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
-				res.send({
+				res.json({
 					status: 0,
 					type: 'FORM_DATA_ERROR',
 					message: '表单信息错误'
@@ -105,7 +105,7 @@ class Admin extends AddressComponent {
 				}
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'GET_ERROR_PARAM',
 					message: err.message,
@@ -116,7 +116,7 @@ class Admin extends AddressComponent {
 				const admin = await AdminModel.findOne({user_name})
 				if (admin) {
 					console.log('该用户已经存在');
-					res.send({
+					res.json({
 						status: 0,
 						type: 'USER_HAS_EXIST',
 						message: '该用户已经存在',
@@ -135,14 +135,14 @@ class Admin extends AddressComponent {
 					}
 					await AdminModel.create(newAdmin)
 					req.session.admin_id = admin_id;
-					res.send({
+					res.json({
 						status: 1,
 						message: '注册管理员成功',
 					})
 				}
 			}catch(err){
 				console.log('注册管理员失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'REGISTER_ADMIN_FAILED',
 					message: '注册管理员失败',
@@ -161,13 +161,13 @@ class Admin extends AddressComponent {
 	async singout(req, res, next){
 		try{
 			delete req.session.admin_id;
-			res.send({
+			res.json({
 				status: 1,
 				success: '退出成功'
 			})
 		}catch(err){
 			console.log('退出失败', err)
-			res.send({
+			res.json({
 				status: 0,
 				message: '退出失败'
 			})
@@ -177,13 +177,13 @@ class Admin extends AddressComponent {
 		const {limit = 20, offset = 0} = req.query;
 		try{
 			const allAdmin = await AdminModel.find({}, '-_id -password').sort({id: -1}).skip(Number(offset)).limit(Number(limit))
-			res.send({
+			res.json({
 				status: 1,
 				data: allAdmin,
 			})
 		}catch(err){
 			console.log('获取超级管理列表失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_ADMIN_LIST',
 				message: '获取超级管理列表失败'
@@ -193,13 +193,13 @@ class Admin extends AddressComponent {
 	async getAdminCount(req, res, next){
 		try{
 			const count = await AdminModel.count()
-			res.send({
+			res.json({
 				status: 1,
 				count,
 			})
 		}catch(err){
 			console.log('获取管理员数量失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_ADMIN_COUNT',
 				message: '获取管理员数量失败'
@@ -210,7 +210,7 @@ class Admin extends AddressComponent {
 		const admin_id = req.session.admin_id;
 		if (!admin_id || !Number(admin_id)) {
 			// console.log('获取管理员信息的session失效');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_SESSION',
 				message: '获取管理员信息失败'
@@ -222,14 +222,14 @@ class Admin extends AddressComponent {
 			if (!info) {
 				throw new Error('未找到当前管理员')
 			}else{
-				res.send({
+				res.json({
 					status: 1,
 					data: info
 				})
 			}
 		}catch(err){
 			console.log('获取管理员信息失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_ADMIN_INFO_FAILED',
 				message: '获取管理员信息失败'
@@ -240,7 +240,7 @@ class Admin extends AddressComponent {
 		const admin_id = req.params.admin_id;
 		if (!admin_id || !Number(admin_id)) {
 			console.log('admin_id参数错误', admin_id)
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_ADMINID',
 				message: 'admin_id参数错误',
@@ -251,14 +251,14 @@ class Admin extends AddressComponent {
 		try{
 			const image_path = await this.getPath(req);
 			await AdminModel.findOneAndUpdate({id: admin_id}, {$set: {avatar: image_path}});
-			res.send({
+			res.json({
 				status: 1,
 				image_path,
 			})
 			return
 		}catch(err){
 			console.log('上传图片失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_UPLOAD_IMG',
 				message: '上传图片失败'

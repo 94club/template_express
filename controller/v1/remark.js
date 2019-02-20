@@ -10,7 +10,7 @@ class Remark extends BaseComponent{
 	async getRemarks(req, res, next){
 		const cart_id = req.params.cart_id;
 		if (!cart_id || !Number(cart_id)) {
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '购物车ID参数错误'
@@ -19,10 +19,10 @@ class Remark extends BaseComponent{
 		}
 		try{
 			const remarks = await RemarkModel.findOne({}, '-_id');
-			res.send(remarks);
+			res.json(remarks);
 		}catch(err){
 			console.log('获取备注数据失败',err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_DATA',
 				message: '获取备注数据失败'

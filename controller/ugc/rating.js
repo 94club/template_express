@@ -23,7 +23,7 @@ class Rating {
 	async getRatings(req, res, next){
 		const restaurant_id = req.params.restaurant_id;
 		if (!restaurant_id || !Number(restaurant_id)) {
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '餐馆ID参数错误'
@@ -32,10 +32,10 @@ class Rating {
 		}
 		try{
 			const ratings = await RatingModel.getData(restaurant_id, this.type[0]);
-			res.send(ratings)
+			res.json(ratings)
 		}catch(err){
 			console.log('获取评论列表失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: "ERROR_DATA",
 				message: '未找到当前餐馆的评论数据'
@@ -45,7 +45,7 @@ class Rating {
 	async getScores(req, res, next){
 		const restaurant_id = req.params.restaurant_id;
 		if (!restaurant_id || !Number(restaurant_id)) {
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '餐馆ID参数错误'
@@ -54,10 +54,10 @@ class Rating {
 		}
 		try{
 			const scores = await RatingModel.getData(restaurant_id, this.type[1]);
-			res.send(scores)
+			res.json(scores)
 		}catch(err){
 			console.log('获取评论列表失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: "ERROR_DATA",
 				message: '未找到当前餐馆的评论数据'
@@ -67,7 +67,7 @@ class Rating {
 	async getTags(req, res, next){
 		const restaurant_id = req.params.restaurant_id;
 		if (!restaurant_id || !Number(restaurant_id)) {
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '餐馆ID参数错误'
@@ -76,10 +76,10 @@ class Rating {
 		}
 		try{
 			const tags = await RatingModel.getData(restaurant_id, this.type[2]);
-			res.send(tags)
+			res.json(tags)
 		}catch(err){
 			console.log('获取评论列表失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: "ERROR_DATA",
 				message: '未找到当前餐馆的评论数据'

@@ -34,9 +34,9 @@ class CityHandle extends AddressComponent{
 					})
 					return
 			}
-			res.send(cityInfo);
+			res.json(cityInfo);
 		}catch(err){
-			res.send({
+			res.json({
 				name: 'ERROR_DATA',
 				message: '获取数据失败',
 			});
@@ -53,9 +53,9 @@ class CityHandle extends AddressComponent{
 		}
 		try{
 			const cityInfo = await Cities.getCityById(cityid);
-			res.send(cityInfo);
+			res.json(cityInfo);
 		}catch(err){
-			res.send({
+			res.json({
 				name: 'ERROR_DATA',
 				message: '获取数据失败',
 			});
@@ -82,10 +82,10 @@ class CityHandle extends AddressComponent{
 	async getExactAddress(req, res, next){
 		try{
 			const position = await this.geocoder(req)
-			res.send(position);
+			res.json(position);
 		}catch(err){
 			console.log('获取精确位置信息失败');
-			res.send({
+			res.json({
 				name: 'ERROR_DATA',
 				message: '获取精确位置信息失败',
 			});
@@ -95,7 +95,7 @@ class CityHandle extends AddressComponent{
 		try{
 			const geohash = req.params.geohash || '';
 			if (geohash.indexOf(',') == -1) {
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: '参数错误',
@@ -112,10 +112,10 @@ class CityHandle extends AddressComponent{
 				longitude: poisArr[1],
 				name: result.result.formatted_addresses.recommend,
 			}
-			res.send(address);
+			res.json(address);
 		}catch(err){
 			console.log('getpois返回信息失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '获取数据失败',

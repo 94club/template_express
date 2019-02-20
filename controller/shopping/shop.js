@@ -21,7 +21,7 @@ class Shop extends AddressComponent{
 			restaurant_id = await this.getId('restaurant_id');
 		}catch(err){
 			console.log('获取商店id失败');
-			res.send({
+			res.json({
 				type: 'ERROR_DATA',
 				message: '获取数据失败'
 			})
@@ -45,7 +45,7 @@ class Shop extends AddressComponent{
 				}
 			}catch(err){
 				console.log('前台参数出错', err.message);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: err.message
@@ -54,7 +54,7 @@ class Shop extends AddressComponent{
 			}
 			const exists = await ShopModel.findOne({name: fields.name});
 			if (exists) {
-				res.send({
+				res.json({
 					status: 0,
 					type: 'RESTURANT_EXISTS',
 					message: '店铺已存在，请尝试其他店铺名称'
@@ -170,14 +170,14 @@ class Shop extends AddressComponent{
 				CategoryHandle.addCategory(fields.category)
 				Rating.initData(restaurant_id);
 				Food.initData(restaurant_id);
-				res.send({
+				res.json({
 					status: 1,
 					sussess: '添加餐馆成功',
 					shopDetail: newShop
 				})
 			}catch(err){
 				console.log('商铺写入数据库失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_SERVER',
 					message: '添加商铺失败',
@@ -209,7 +209,7 @@ class Shop extends AddressComponent{
 			}
 		}catch(err){
 			console.log('latitude,longitude参数错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: err.message
@@ -291,9 +291,9 @@ class Shop extends AddressComponent{
 			})
 		}
 		try{
-			res.send(restaurants)
+			res.json(restaurants)
 		}catch(err){
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_SHOP_LIST',
 				message: '获取店铺列表数据失败'
@@ -311,7 +311,7 @@ class Shop extends AddressComponent{
 			}
 		}catch(err){
 			console.log('搜索商铺参数错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: err.message,
@@ -336,10 +336,10 @@ class Shop extends AddressComponent{
 					return Object.assign(item, distance_duration[index])
 				})
 			}
-			res.send(restaurants);
+			res.json(restaurants);
 		}catch(err){
 			console.log('搜索餐馆数据失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_DATA',
 				message: '搜索餐馆数据失败'
@@ -351,7 +351,7 @@ class Shop extends AddressComponent{
 		const restaurant_id = req.params.restaurant_id;
 		if (!restaurant_id || !Number(restaurant_id)) {
 			console.log('获取餐馆详情参数ID错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '餐馆ID参数错误',
@@ -360,10 +360,10 @@ class Shop extends AddressComponent{
 		}
 		try{
 			const restaurant = await ShopModel.findOne({id: restaurant_id}, '-_id');
-			res.send(restaurant)
+			res.json(restaurant)
 		}catch(err){
 			console.log('获取餐馆详情失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取餐馆详情失败'
@@ -373,13 +373,13 @@ class Shop extends AddressComponent{
 	async getShopCount(req, res, next){
 		try{
 			const count = await ShopModel.count();
-			res.send({
+			res.json({
 				status: 1,
 				count,
 			})
 		}catch(err){
 			console.log('获取餐馆数量失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_COUNT',
 				message: '获取餐馆数量失败'
@@ -391,7 +391,7 @@ class Shop extends AddressComponent{
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
 				console.log('获取商铺信息form出错', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_FORM',
 					message: '表单信息错误',
@@ -400,7 +400,7 @@ class Shop extends AddressComponent{
 			}
 			const {name, address, description = "", phone, category, id, latitude, longitude, image_path} = fields;
 			if (id == 1) {
-				res.send({
+				res.json({
 					status: 0,
 					message: '此店铺用做展示，请不要修改'
 				})
@@ -427,13 +427,13 @@ class Shop extends AddressComponent{
 					newData = {name, address, description, phone, category, image_path}
 				}
 				await ShopModel.findOneAndUpdate({id}, {$set: newData});
-				res.send({
+				res.json({
 					status: 1,
 					success: '修改商铺信息成功',
 				})
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_UPDATE_RESTAURANT',
 					message: '更新商铺信息失败',
@@ -445,7 +445,7 @@ class Shop extends AddressComponent{
 		const restaurant_id = req.params.restaurant_id;
 		if (!restaurant_id || !Number(restaurant_id)) {
 			console.log('restaurant_id参数错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: 'restaurant_id参数错误',
@@ -453,7 +453,7 @@ class Shop extends AddressComponent{
 			return 
 		}
 		if (restaurant_id == 1) {
-				res.send({
+				res.json({
 					status: 0,
 					message: '此店铺用做展示，请不要删除'
 				})
@@ -461,13 +461,13 @@ class Shop extends AddressComponent{
 			}
 		try{
 			await ShopModel.remove({id: restaurant_id});
-			res.send({
+			res.json({
 				status: 1,
 				success: '删除餐馆成功',
 			})
 		}catch(err){
 			console.log('删除餐馆失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'DELETE_RESTURANT_FAILED',
 				message: '删除餐馆失败',

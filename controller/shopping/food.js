@@ -54,13 +54,13 @@ class Food extends BaseComponent{
 		const restaurant_id = req.params.restaurant_id;
 		try{
 			const category_list = await MenuModel.find({restaurant_id});
-			res.send({
+			res.json({
 				status: 1,
 				category_list,
 			})
 		}catch(err){
 			console.log('获取餐馆食品种类失败');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_GET_DATA',
 				message: '获取数据失败'
@@ -78,7 +78,7 @@ class Food extends BaseComponent{
 				}
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: err.message
@@ -90,7 +90,7 @@ class Food extends BaseComponent{
 				category_id = await this.getId('category_id');
 			}catch(err){
 				console.log('获取category_id失败');
-				res.send({
+				res.json({
 					type: 'ERROR_DATA',
 					message: '获取数据失败'
 				})
@@ -106,13 +106,13 @@ class Food extends BaseComponent{
 			const newFood = new MenuModel(foodObj);
 			try{
 				await newFood.save();
-				res.send({
+				res.json({
 					status: 1,
 					success: '添加食品种类成功',
 				})
 			}catch(err){
 				console.log('保存数据失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_IN_SAVE_DATA',
 					message: '保存数据失败',
@@ -137,7 +137,7 @@ class Food extends BaseComponent{
 				}
 			}catch(err){
 				console.log('前台参数错误', err.message);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: err.message
@@ -151,7 +151,7 @@ class Food extends BaseComponent{
 				restaurant = await ShopModel.findOne({id: fields.restaurant_id});
 			}catch(err){
 				console.log('获取食品类型和餐馆信息失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_DATA',
 					message: '添加食品失败'
@@ -163,7 +163,7 @@ class Food extends BaseComponent{
 				item_id = await this.getId('item_id');
 			}catch(err){
 				console.log('获取item_id失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_DATA',
 					message: '添加食品失败'
@@ -224,7 +224,7 @@ class Food extends BaseComponent{
 				newFood.specifications = specifications;
 			}catch(err){
 				console.log('添加specs失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_DATA',
 					message: '添加食品失败'
@@ -236,13 +236,13 @@ class Food extends BaseComponent{
 				category.foods.push(foodEntity);
 				category.markModified('foods');
 				await category.save();
-				res.send({
+				res.json({
 					status: 1,
 					success: '添加食品成功',
 				});
 			}catch(err){
 				console.log('保存食品到数据库失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_DATA',
 					message: '添加食品失败'
@@ -312,7 +312,7 @@ class Food extends BaseComponent{
 		const allMenu = req.query.allMenu;
 		if (!restaurant_id || !Number(restaurant_id)) {
 			console.log('获取餐馆参数ID错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: '餐馆ID参数错误',
@@ -327,10 +327,10 @@ class Food extends BaseComponent{
 		}
 		try{
 			const menu = await MenuModel.find(filter, '-_id');
-			res.send(menu);
+			res.json(menu);
 		}catch(err){
 			console.log('获取食品数据失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取食品数据失败'
@@ -341,7 +341,7 @@ class Food extends BaseComponent{
 		const category_id = req.params.category_id;
 		if (!category_id || !Number(category_id)) {
 			console.log('获取Menu详情参数ID错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: 'Menu ID参数错误',
@@ -350,10 +350,10 @@ class Food extends BaseComponent{
 		}
 		try{
 			const menu = await MenuModel.findOne({id: category_id}, '-_id');
-			res.send(menu)
+			res.json(menu)
 		}catch(err){
 			console.log('获取Menu详情失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取Menu详情失败'
@@ -369,10 +369,10 @@ class Food extends BaseComponent{
 			}
 
 			const foods = await FoodModel.find(filter, '-_id').sort({item_id: -1}).limit(Number(limit)).skip(Number(offset));
-			res.send(foods);
+			res.json(foods);
 		}catch(err){
 			console.log('获取食品数据失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取食品数据失败'
@@ -388,13 +388,13 @@ class Food extends BaseComponent{
 			}
 
 			const count = await FoodModel.find(filter).count();
-			res.send({
+			res.json({
 				status: 1,
 				count,
 			})
 		}catch(err){
 			console.log('获取食品数量失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_TO_GET_COUNT',
 				message: '获取食品数量失败'
@@ -406,7 +406,7 @@ class Food extends BaseComponent{
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
 				console.log('获取食品信息form出错', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_FORM',
 					message: '表单信息错误',
@@ -450,13 +450,13 @@ class Food extends BaseComponent{
 					await menu.save()
 				}
 
-				res.send({
+				res.json({
 					status: 1,
 					success: '修改食品信息成功',
 				})
 			}catch(err){
 				console.log(err.message, err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_UPDATE_FOOD',
 					message: '更新食品信息失败',
@@ -468,7 +468,7 @@ class Food extends BaseComponent{
 		const food_id = req.params.food_id;
 		if (!food_id || !Number(food_id)) {
 			console.log('food_id参数错误');
-			res.send({
+			res.json({
 				status: 0,
 				type: 'ERROR_PARAMS',
 				message: 'food_id参数错误',
@@ -482,13 +482,13 @@ class Food extends BaseComponent{
 			await subFood.remove()
 			await menu.save()
 			await food.remove()
-			res.send({
+			res.json({
 				status: 1,
 				success: '删除食品成功',
 			})
 		}catch(err){
 			console.log('删除食品失败', err);
-			res.send({
+			res.json({
 				status: 0,
 				type: 'DELETE_FOOD_FAILED',
 				message: '删除食品失败',

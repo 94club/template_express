@@ -2,7 +2,7 @@ import express from 'express'
 const router = express.Router()
 
 router.get('/payment/queryOrder', (req, res, next) => {
-  res.send({
+  res.json({
     status: 0,
     type: 'PAY_FAILED',
     message: '暂不开放支付功能',

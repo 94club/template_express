@@ -33,7 +33,7 @@ class Carts extends AddressComponent{
 				}
 			}catch(err){
 				console.log(err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_PARAMS',
 					message: err.message
@@ -58,7 +58,7 @@ class Carts extends AddressComponent{
 				delivery_reach_time = hour + ':' + minute;
 			}catch(err){
 				console.log('获取数据数据失败', err);
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_DATA',
 					message: '添加购物车失败',
@@ -115,10 +115,10 @@ class Carts extends AddressComponent{
 			try{
 				const newCart = new CartModel(checkoutInfo);
 				const cart = await newCart.save();
-				res.send(cart)
+				res.json(cart)
 			}catch(err){
 				console.log('保存购物车数据失败');
-				res.send({
+				res.json({
 					status: 0,
 					type: 'ERROR_TO_SAVE_CART',
 					message: '加入购物车失败'

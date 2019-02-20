@@ -57,7 +57,6 @@ function refreshToken (req, res, next) {
 function set (token, username) {
   redisClient.set(token, username, function (err, reply) {
     if (err) return false
-    // console.log(reply + 'set')
     if (reply) {
       // 设置过期时间
       redisClient.expire(token, constant.expireTime, function(err, reply) {
@@ -75,8 +74,6 @@ function set (token, username) {
     // 覆盖旧的token
     redisClient.set('token_current_' + username, token)
   });
-  
-
 }
 
 function remove (req, next) {

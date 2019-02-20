@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import gm from 'gm'
+import fetch from 'node-fetch';
 
 export default class BaseComponent {
 	
