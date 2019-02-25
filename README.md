@@ -1,5 +1,6 @@
-# tempalte_express
-这是一个express后台模版
+## 关于项目
+
+项目采用master模版分支扩展，为uniapp前端项目(https://github.com/94club/uniapp_elm)提供api服务
 
 ## 包含功能：
 
