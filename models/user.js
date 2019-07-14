@@ -9,7 +9,7 @@ const userSchema = new Schema({
   password: String,
   id: Number,
   createTime: String,
-  role: Number,  // 0普通用户 1管理员
+  role: Number,  // 0普通用户 1管理员 2超级管理员
 })
 
 const User = mongoose.model('User', userSchema)
