@@ -14,7 +14,7 @@ class User {
   }
 
   async login (req, res) {
-    let role = 0 // 0代表普通用户 1代表管理员
+    let role = 2 // 1代表超级管理员 2代表管理员
     let username = req.body.username
     let password = req.body.password
     const tokenObj = {
@@ -41,16 +41,13 @@ class User {
     let token = jsonwebtoken.sign(tokenObj, constant.secretKey)
     if (user) {
       // 用户已存在 去登录
-      let userInfo = await UserModel.findOne({
-        username,
-        password
-      })
+      let userInfo = await UserModel.findOne({username}, {'passowrd': 0})
       if (userInfo) {
         redisManager.set(token, username)
         res.json({
           status: 200,
           message: '登录成功',
-          data: token
+          data: {token, userInfo}
         })
       } else {
         res.json({
@@ -59,41 +56,53 @@ class User {
         })
       }
     } else {
-      let arr = await UserModel.find()
-      let newUser = {
-        username,
-        password,
-        role,
-        createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
-        id: arr.length + 1
-      }
-      try {
-        UserModel.create(newUser, (err) => {
-          if (err) {
-            res.json({
-              status: 0,
-              message: '注册失败'
-            })
-          } else {
-            redisManager.set(token, username)
-            res.json({
-              status: 200,
-              message: '注册成功',
-              data: token
-            })
-          }
-        })
-      } catch (err) {
+      if (username === 'admin') {
+        let arr = await UserModel.find()
+        let newUser = {
+          username,
+          password,
+          role: 1,
+          createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+          id: arr.length + 1
+        }
+        try {
+          UserModel.create(newUser, (err) => {
+            if (err) {
+              res.json({
+                status: 0,
+                message: '注册失败'
+              })
+            } else {
+              redisManager.set(token, username)
+              res.json({
+                status: 200,
+                message: '注册成功',
+                data: {
+                  username,
+                  role,
+                  createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+                  id: arr.length + 1,
+                  token
+                }
+              })
+            }
+          })
+        } catch (err) {
+          res.json({
+            status: 0,
+            message: err.message
+          })
+        }
+      } else {
         res.json({
           status: 0,
-          message: err.message
+          message: '查无此用户，请联系管理员'
         })
       }
     }
   }
 
   async getUserInfo (req, res) {
-    console.log(req)
     let userInfo = await UserModel.findOne({username: req.user.username}, {'_id': 0, '_v': 0})
     if (userInfo) {
       res.json({
