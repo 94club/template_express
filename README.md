@@ -15,3 +15,5 @@
 2 用1中生成的json文件替换public/apidoc/apidoc.json<br/>
 3 利用express的静态服务，生成接口文档 localhost/apidoc<br/>
 [5、单点登录]
+db.createUser({user:"admin888",pwd:"admin***888",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
+db.createUser({user:"test888",pwd:"test***888",roles:[{role:"readWrite",db:"test"}]})

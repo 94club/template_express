@@ -1,6 +1,7 @@
 'use strict'
 
 import UserModel from '../models/user'
+import RecordModel from '../models/record'
 import dateAndTime from 'date-and-time'
 import constant from '../constant/constant'
 import jsonwebtoken from 'jsonwebtoken'
@@ -10,11 +11,13 @@ class User {
   constructor () {
     this.login = this.login.bind(this)
     this.getUserInfo = this.getUserInfo.bind(this)
+    this.getRecord = this.getRecord.bind(this)
     this.logout = this.logout.bind(this)
+    this.addAdmin = this.addAdmin.bind(this)
+    this.addVip = this.addVip.bind(this)
   }
 
   async login (req, res) {
-    let role = 2 // 1代表超级管理员 2代表管理员
     let username = req.body.username
     let password = req.body.password
     const tokenObj = {
@@ -33,37 +36,56 @@ class User {
       })
       return
     }
-    if (username === 'admin') {
-      role = 1
-    }
     // 先查一遍看看是否存在
-    let user = await UserModel.findOne({username})
+    let userInfo = await UserModel.findOne({username, password}, {'passowrd': 0, '_id': 0, '__v': 0})
     let token = jsonwebtoken.sign(tokenObj, constant.secretKey)
-    if (user) {
+    if (userInfo) {
       // 用户已存在 去登录
-      let userInfo = await UserModel.findOne({username}, {'passowrd': 0})
-      if (userInfo) {
-        redisManager.set(token, username)
-        res.json({
-          status: 200,
-          message: '登录成功',
-          data: {token, userInfo}
-        })
-      } else {
-        res.json({
-          status: 0,
-          message: '登录失败,用户名或密码错误'
-        })
-      }
+      redisManager.set(token, username)
+      res.json({
+        status: 200,
+        message: '登录成功',
+        data: {token, userInfo}
+      })
+      this.addRecord({
+        username,
+        des: userInfo.des,
+        createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+        opertionText: userInfo.des + '' + username + '登录成功'
+      })
     } else {
+      let routerArr = [
+        {
+          title: '超级管理员',
+          index: '1',
+          menuItems: [
+            {
+              title: 'record',
+              index: 'record',
+              btns: []
+            },
+            {
+              title: 'member',
+              index: 'member',
+              btns: []
+            },
+            {
+              title: 'page',
+              index: 'page',
+              btns: []
+            }
+          ]
+        }
+      ]
       if (username === 'admin') {
-        let arr = await UserModel.find()
         let newUser = {
           username,
           password,
           role: 1,
+          des: '超级管理员',
           createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
-          id: arr.length + 1
+          id: 1,
+          routerArr
         }
         try {
           UserModel.create(newUser, (err) => {
@@ -77,13 +99,21 @@ class User {
               res.json({
                 status: 200,
                 message: '注册成功',
-                data: {
-                  username,
-                  role,
-                  createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
-                  id: arr.length + 1,
-                  token
+                data: {token, userInfo:
+                  {
+                    username,
+                    role: 1,
+                    createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+                    id: 1,
+                    routerArr
+                  }
                 }
+              })
+              this.addRecord({
+                username,
+                des: '超级管理员',
+                createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+                opertionText: '超级管理员' + username + '被创建了'
               })
             }
           })
@@ -96,14 +126,14 @@ class User {
       } else {
         res.json({
           status: 0,
-          message: '查无此用户，请联系管理员'
+          message: '用戶名或密码不正确，请联系管理员'
         })
       }
     }
   }
 
   async getUserInfo (req, res) {
-    let userInfo = await UserModel.findOne({username: req.user.username}, {'_id': 0, '_v': 0})
+    let userInfo = await UserModel.findOne({username: req.user.username}, {'_id': 0, '__v': 0, 'password': 0})
     if (userInfo) {
       res.json({
         status: 200,
@@ -113,7 +143,7 @@ class User {
     } else {
       res.json({
         status: 0,
-        message: '查询失败'
+        message: '用户查询失败，请联系管理员'
       })
     }
   }
@@ -122,9 +152,44 @@ class User {
     // 清楚redis中的token
     res.json({
       status: 200,
-      message: '登出成功'
+      data: '退出成功'
     })
     redisManager.remove(req)
+  }
+
+  async getRecord (req, res) {
+    let recordInfo = await UserModel.find({}, { '_id': 0, '__v': 0})
+    if (recordInfo) {
+      res.json({
+        status: 200,
+        message: '查询记录成功',
+        data: recordInfo
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '用户记录失败，请联系管理员'
+      })
+    }
+  }
+
+  async addAdmin (req, res) {}
+
+  async addVip (req, res) {}
+
+  addRecord (recordText) {
+    try {
+      RecordModel.create(recordText, (err) => {
+        if (err) {
+          console.log('日志写入失败')
+        } else {
+          console.log('日志写入成功')
+        }
+        console.log(recordText)
+      })
+    } catch (err) {
+      console.log('日志写入catch失败')
+    }
   }
 }
 

@@ -4,16 +4,15 @@ import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema
 
-const userSchema = new Schema({
+const vipSchema = new Schema({
   username: String,
   password: String,
   id: Number,
-  des: String,
+  des: {type: String, default: '用户'},
   createTime: String,
-  role: Number,  // 2管理员 1超级管理员
   routerArr: Array
 })
 
-const User = mongoose.model('User', userSchema)
+const Vip = mongoose.model('Vip', vipSchema)
 
-export default User
+export default Vip
