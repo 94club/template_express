@@ -2,6 +2,7 @@
 
 import UserModel from '../models/user'
 import RecordModel from '../models/record'
+import PageModel from '../models/page'
 import dateAndTime from 'date-and-time'
 import constant from '../constant/constant'
 import jsonwebtoken from 'jsonwebtoken'
@@ -13,8 +14,18 @@ class User {
     this.getUserInfo = this.getUserInfo.bind(this)
     this.getRecord = this.getRecord.bind(this)
     this.logout = this.logout.bind(this)
-    this.addAdmin = this.addAdmin.bind(this)
-    this.addVip = this.addVip.bind(this)
+    this.postPage = this.postPage.bind(this)
+    this.getPage = this.getPage.bind(this)
+    this.deletePage = this.deletePage.bind(this)
+    this.putPage = this.putPage.bind(this)
+    this.postAdmin = this.postAdmin.bind(this)
+    this.getAdmin = this.getAdmin.bind(this)
+    this.deleteAdmin = this.deleteAdmin.bind(this)
+    this.putAdmin = this.putAdmin.bind(this)
+    this.postVip = this.postVip.bind(this)
+    this.deleteVip = this.deleteVip.bind(this)
+    this.putVip = this.putVip.bind(this)
+    this.getVip = this.getVip.bind(this)
   }
 
   async login (req, res) {
@@ -158,7 +169,7 @@ class User {
   }
 
   async getRecord (req, res) {
-    let recordInfo = await UserModel.find({}, { '_id': 0, '__v': 0})
+    let recordInfo = await RecordModel.find({}, { '_id': 0, '__v': 0}).sort({_id: -1})
     if (recordInfo) {
       res.json({
         status: 200,
@@ -173,9 +184,143 @@ class User {
     }
   }
 
-  async addAdmin (req, res) {}
+  async postPage (req, res) {
+    let data = req.body
+    let {name, value, tagList} = data
+    try {
+      if (!name) {
+        throw new Error('界面名称不能为空')
+      } else if (!value) {
+        throw new Error('界面值不能为空')
+      } else if (tagList.length === 0) {
+        throw new Error('标签不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let pageList = await PageModel.find({})
+    try {
+      PageModel.create({
+        id: pageList.length + 1,
+        name,
+        value,
+        tagList
+      }, (err) => {
+        if (err) {
+          console.log('界面写入失败')
+          res.json({
+            status: 0,
+            data: '界面添加失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            des: '超级管理员',
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '界面添加成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            des: '超级管理员',
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (err) {
+      console.log('日志写入catch失败')
+    }
+  }
 
-  async addVip (req, res) {}
+  async deletePage (req, res) {
+    let data = res.body
+    let {id} = data
+    try {
+      if (!id) {
+        throw new Error('id不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    try {
+      PageModel.remove({id}, (err) => {
+        if (err) {
+          console.log('界面删除失败')
+          res.json({
+            status: 0,
+            data: '界面删除失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            des: '超级管理员',
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '删除了' + data.name + '界面失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '界面添加成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            des: '超级管理员',
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (error) {
+      console.log('page删除catch失败')
+    }
+  }
+
+  async putPage (req, res) {}
+
+  async getPage (req, res) {
+    let pageInfo = await PageModel.find({}, { '_id': 0, '__v': 0}).sort({_id: -1})
+    if (pageInfo) {
+      res.json({
+        status: 200,
+        message: '查询界面成功',
+        data: pageInfo
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '界面查询失败，请联系管理员'
+      })
+    }
+  }
+
+  async postAdmin (req, res) {}
+
+  async deleteAdmin (req, res) {}
+
+  async putAdmin (req, res) {}
+
+  async getAdmin (req, res) {}
+
+  async postVip (req, res) {}
+
+  async deleteVip (req, res) {}
+
+  async putVip (req, res) {}
+
+  async getVip (req, res) {}
 
   addRecord (recordText) {
     try {
