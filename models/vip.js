@@ -10,7 +10,8 @@ const vipSchema = new Schema({
   id: Number,
   des: {type: String, default: '用户'},
   createTime: String,
-  routerArr: Array
+  pageList: Array,
+  createBy: String
 })
 
 const Vip = mongoose.model('Vip', vipSchema)

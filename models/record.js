@@ -6,7 +6,6 @@ const Schema = mongoose.Schema
 
 const recordSchema = new Schema({
     username: String,
-    des: String,
     createTime: String,
     opertionText: String
 })

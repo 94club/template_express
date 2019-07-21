@@ -10,6 +10,8 @@ const pageSchema = new Schema({
   value: String,
   tagList: Array,
   id: Number,
+  checked: {type: Array, default: []},
+  isShow: {type: Boolean, default: false}, // 前端是否显示页面 由checked的length决定
   createTime: String
 })
 

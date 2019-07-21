@@ -3,6 +3,7 @@
 import UserModel from '../models/user'
 import RecordModel from '../models/record'
 import PageModel from '../models/page'
+import VipModel from '../models/vip'
 import dateAndTime from 'date-and-time'
 import constant from '../constant/constant'
 import jsonwebtoken from 'jsonwebtoken'
@@ -41,8 +42,8 @@ class User {
         throw new Error('密码不能为空')
       }
     } catch (err) {
+      status: 0,
       res.json({
-        status: 0,
         message: err.message
       })
       return
@@ -60,7 +61,6 @@ class User {
       })
       this.addRecord({
         username,
-        des: userInfo.des,
         createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
         opertionText: userInfo.des + '' + username + '登录成功'
       })
@@ -96,7 +96,8 @@ class User {
           des: '超级管理员',
           createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
           id: 1,
-          routerArr
+          routerArr,
+          createBy: '94club'
         }
         try {
           UserModel.create(newUser, (err) => {
@@ -122,7 +123,6 @@ class User {
               })
               this.addRecord({
                 username,
-                des: '超级管理员',
                 createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
                 opertionText: '超级管理员' + username + '被创建了'
               })
@@ -219,7 +219,6 @@ class User {
           })
           this.addRecord({
             username: req.user.username,
-            des: '超级管理员',
             createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
             opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面失败'
           })
@@ -230,7 +229,6 @@ class User {
           })
           this.addRecord({
             username: req.user.username,
-            des: '超级管理员',
             createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
             opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面成功'
           })
@@ -267,7 +265,6 @@ class User {
           })
           this.addRecord({
             username: req.user.username,
-            des: '超级管理员',
             createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
             opertionText: '超级管理员' + req.user.username + '删除了' + data.name + '界面失败'
           })
@@ -278,7 +275,6 @@ class User {
           })
           this.addRecord({
             username: req.user.username,
-            des: '超级管理员',
             createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
             opertionText: '超级管理员' + req.user.username + '创建了' + data.name + '界面成功'
           })
@@ -338,21 +334,313 @@ class User {
     }
   }
 
-  async postAdmin (req, res) {}
+  async postAdmin (req, res) {
+    let data = req.body
+    let {username, password} = data
+    try {
+      if (!username) {
+        throw new Error('账号不能为空')
+      } else if (!password) {
+        throw new Error('密码不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let userList = await UserModel.find({})
+    let routerArr = [
+      {
+        title: '管理员',
+        index: '2',
+        menuItems: [
+          {
+            title: 'page',
+            index: 'page',
+            btns: []
+          }
+        ]
+      }
+    ]
+    try {
+      UserModel.create({
+        id: userList.length + 1,
+        username,
+        password,
+        role: 2,
+        des: '管理员',
+        createBy: req.user.username,
+        routerArr,
+        createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+      }, (err) => {
+        if (err) {
+          console.log('管理员添加失败')
+          res.json({
+            status: 0,
+            data: '管理员添加失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建' + data.username + '失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '管理员添加成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建' + data.username + '成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (err) {
+      console.log('日志写入catch失败')
+    }
+  }
 
-  async deleteAdmin (req, res) {}
+  async deleteAdmin (req, res) {
+    let data = req.query
+    console.log(req.query)
+    let {id} = data
+    try {
+      if (!id) {
+        throw new Error('id不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    try {
+      UserModel.remove({id}, (err) => {
+        if (err) {
+          console.log('删除失败')
+          res.json({
+            status: 0,
+            data: '删除失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '删除了' + data.username + '失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '删除成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '删除' + data.username + '成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (error) {
+      console.log('page删除catch失败')
+    }
+  }
+  async putAdmin (req, res) {
+    let data = req.body
+    let {username, password, id} = data
+    try {
+      if (!username) {
+        throw new Error('账号不能为空')
+      } else if (!password) {
+        throw new Error('密码不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let updateInfo = await UserModel.update({id}, data)
+    if (updateInfo) {
+      res.json({
+        status: 200,
+        data: '界面更新成功'
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '界面更新失败，请联系管理员'
+      })
+    }
+  }
 
-  async putAdmin (req, res) {}
+  async getAdmin (req, res) {
+    let userList = await UserModel.find({}, {'_id': 0, '__v': 0, 'password': 0}).sort({_id: -1})
+    if (userList) {
+      res.json({
+        status: 200,
+        message: '查询成功',
+        data: userList
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '查询失败，请联系管理员'
+      })
+    }
+  }
 
-  async getAdmin (req, res) {}
+  async postVip (req, res) {
+    let data = req.body
+    let {username, password, pageList} = data
+    try {
+      if (!username) {
+        throw new Error('账号不能为空')
+      } else if (!password) {
+        throw new Error('密码不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let vipList = await VipModel.find({})
+    try {
+      VipModel.create({
+        id: vipList.length + 1,
+        username,
+        password,
+        createBy: req.user.username,
+        pageList,
+        createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+      }, (err) => {
+        if (err) {
+          console.log('用户添加失败')
+          res.json({
+            status: 0,
+            data: '用户添加失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: req.user.username + '创建' + data.username + '失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '用户添加成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: '超级管理员' + req.user.username + '创建' + data.username + '成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (err) {
+      console.log('日志写入catch失败')
+    }
+  }
 
-  async postVip (req, res) {}
+  async deleteVip (req, res) {
+    let data = req.query
+    console.log(req.query)
+    let {id} = data
+    try {
+      if (!id) {
+        throw new Error('id不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    try {
+      VipModel.remove({id}, (err) => {
+        if (err) {
+          console.log('删除失败')
+          res.json({
+            status: 0,
+            data: '删除失败'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: req.user.username + '删除了' + data.username + '失败'
+          })
+        } else {
+          res.json({
+            status: 200,
+            data: '删除成功'
+          })
+          this.addRecord({
+            username: req.user.username,
+            createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
+            opertionText: req.user.username + '删除' + data.username + '成功'
+          })
+        }
+        console.log(data)
+      })
+    } catch (error) {
+      console.log('page删除catch失败')
+    }
+  }
 
-  async deleteVip (req, res) {}
+  async putVip (req, res) {
+    let data = req.body
+    let {username, password, id} = data
+    try {
+      if (!username) {
+        throw new Error('账号不能为空')
+      } else if (!password) {
+        throw new Error('密码不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let updateInfo = await VipModel.update({id}, data)
+    if (updateInfo) {
+      res.json({
+        status: 200,
+        data: '用户更新成功'
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '用户更新失败，请联系管理员'
+      })
+    }
+  }
 
-  async putVip (req, res) {}
-
-  async getVip (req, res) {}
+  async getVip (req, res) {
+    let vipList = await VipModel.find({}, {'_id': 0, '__v': 0, 'password': 0}).sort({_id: -1})
+    if (vipList) {
+      res.json({
+        status: 200,
+        message: '查询成功',
+        data: vipList
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '查询失败，请联系管理员'
+      })
+    }
+  }
 
   addRecord (recordText) {
     try {

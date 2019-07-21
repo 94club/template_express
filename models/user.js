@@ -11,7 +11,8 @@ const userSchema = new Schema({
   des: String,
   createTime: String,
   role: Number,  // 2管理员 1超级管理员
-  routerArr: Array
+  routerArr: Array,
+  createBy: String
 })
 
 const User = mongoose.model('User', userSchema)
