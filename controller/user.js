@@ -208,7 +208,8 @@ class User {
         id: pageList.length + 1,
         name,
         value,
-        tagList
+        tagList,
+        createTime: dateAndTime.format(new Date(), "YYYY/MM/DD HH:mm:ss"),
       }, (err) => {
         if (err) {
           console.log('界面写入失败')
@@ -242,7 +243,8 @@ class User {
   }
 
   async deletePage (req, res) {
-    let data = res.body
+    let data = req.query
+    console.log(req.query)
     let {id} = data
     try {
       if (!id) {
@@ -288,10 +290,40 @@ class User {
     }
   }
 
-  async putPage (req, res) {}
+  async putPage (req, res) {
+    let data = req.body
+    let {name, value, tagList, id} = data
+    try {
+      if (!name) {
+        throw new Error('界面名称不能为空')
+      } else if (!value) {
+        throw new Error('界面值不能为空')
+      } else if (tagList.length === 0) {
+        throw new Error('标签不能为空')
+      }
+    } catch (err) {
+      res.json({
+        status: 0,
+        message: err.message
+      })
+      return
+    }
+    let updateInfo = await PageModel.update({id}, data)
+    if (updateInfo) {
+      res.json({
+        status: 200,
+        data: '界面更新成功'
+      })
+    } else {
+      res.json({
+        status: 0,
+        message: '界面更新失败，请联系管理员'
+      })
+    }
+  }
 
   async getPage (req, res) {
-    let pageInfo = await PageModel.find({}, { '_id': 0, '__v': 0}).sort({_id: -1})
+    let pageInfo = await PageModel.find({}, { '_id': 0, '__v': 0}).sort({_id: -1}).sort({_id: -1})
     if (pageInfo) {
       res.json({
         status: 200,

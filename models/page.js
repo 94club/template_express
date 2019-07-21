@@ -9,7 +9,8 @@ const pageSchema = new Schema({
   name: String,
   value: String,
   tagList: Array,
-  id: Number
+  id: Number,
+  createTime: String
 })
 
 const Page = mongoose.model('Page', pageSchema)
